@@ -1,0 +1,71 @@
+1-я Практичка
+__________________________________________________________
+1 Изменение значения поля
+UPDATE `airport` SET `flight_speed`=`flight_speed`+0.1 
+
+2 Удаление строк с условием
+DELETE FROM `airport` WHERE airport.number_of_seats<'300'
+
+3 Выборка
+SELECT * FROM `airport` WHERE airport.number_of_seats BETWEEN 300 AND 400
+SELECT * FROM `airport` WHERE airport.number_of_seats>400 AND airport.flight_speed<0.90
+
+4 Поиск по строковому значению
+SELECT * FROM `airport` WHERE airport.type='passenger' 
+
+5 Выборка данных с агрегирующей фун-ей
+SELECT MAX(airport.number_of_seats) FROM `airport`
+SELECT AVG(airport.number_of_seats) FROM `airport` 
+
+6 Группировка
+SELECT airport.type,AVG(airport.flight_speed) FROM `airport` GROUP BY airport.type
+__________________________________________________________
+
+
+
+2-я Практичка
+__________________________________________________________
+1 
+SELECT category_airplane.name, airplane.numper_airplane FROM `airplane`,`category_airplane` WHERE airplane.id_category=category_airplane.id 
+
+2 Вывести кол-во типов самолетов(сколько боингов, сколько аэропланов и все такое)
+SELECT category_airplane.name, COUNT(airplane.numper_airplane) FROM `airplane` JOIN category_airplane ON airplane.id_category=category_airplane.id GROUP BY category_airplane.name
+
+3 Вывести номера всех боингов и вмещаемость
+SELECT airplane.numper_airplane, airplane.number_of_seats FROM `airplane` WHERE airplane.id_category=1
+
+4 Вставить Piston aircraft и Atomic plane в категории, вывести номера самолетов и их категорию, даже если нет соотвествий 
+INSERT INTO `category_airplane`(`name`) VALUES ('Piston aircraft');
+INSERT INTO `category_airplane`(`name`) VALUES ('Atomic plane');
+
+SELECT category_airplane.name, airplane.numper_airplane, airplane.flight_speed FROM `category_airplane` LEFT JOIN `airplane` ON airplane.id_category=category_airplane.id ORDER BY `airplane`.`flight_speed` ASC 
+
+
+5 SELECT category_airplane.name, type_airplane.name, airplane.numper_airplane, airplane.number_of_seats, airplane.flight_speed FROM `airplane`,`type_airplane`,`category_airplane` WHERE category_airplane.id=airplane.id_category AND type_airplane.id=airplane.id_type
+
+6 Найти все аэропланы, вывести только их номера
+SELECT airplane.numper_airplane FROM `airplane` WHERE airplane.id_category=1
+
+7 Найти самолет с номером 777
+SELECT type_airplane.name, category_airplane.name,airplane.numper_airplane, airplane.number_of_seats, airplane.flight_speed FROM `airplane`, `type_airplane`, `category_airplane` WHERE airplane.id_category=category_airplane.id AND airplane.id_type=type_airplane.id AND airplane.numper_airplane='777'
+
+8 Вывести все типы у которых нет самолетов
+SELECT type_airplane.name FROM `type_airplane` LEFT JOIN `airplane` ON airplane.id_type=type_airplane.id WHERE airplane.id_type IS NULL
+
+9 Найти все самолеты у которых вместимость от 300 человек. Вывести номер, категорию самолета и вместимоть
+SELECT category_airplane.name, airplane.numper_airplane, airplane.number_of_seats FROM `airplane`,`category_airplane`, `type_airplane` WHERE airplane.id_category=category_airplane.id AND airplane.number_of_seats> 300 AND airplane.id_type=type_airplane.id 
+
+10 Определить разницу скорости полета между самой большой и самой маленькой
+SELECT MAX(airplane.flight_speed)-MIN(airplane.flight_speed) from airplane
+
+11 Объединить запросы: 1 - поиск самолетов чей номер начинается с буквы и 2 - поиск самолетов чья скорость полета больше 0,5
+SELECT airplane.flight_speed, airplane.numper_airplane FROM `airplane` WHERE id in (SELECT airplane.id 
+FROM airplane
+WHERE airplane.flight_speed > 0.5 ) AND airplane.numper_airplane REGEXP '^[a-zA-Z][*]*'
+
+12 Создать представление по одному из запросов и затем вывести него информацию по произвольному критерию
+CREATE VIEW first_v AS SELECT category_airplane.name, airplane.numper_airplane, airplane.flight_speed 
+FROM `category_airplane` LEFT JOIN `airplane` ON airplane.id_category=category_airplane.id 
+ORDER BY `airplane`.`flight_speed`;
+(SELECT * FROM first_v)
+__________________________________________________________
